@@ -1,0 +1,2 @@
+1) Parsing XML files in hadoop
+	https://stackoverflow.com/questions/37757266/how-to-use-streamxmlrecordreader-to-parse-single-multiline-xml-records-within
