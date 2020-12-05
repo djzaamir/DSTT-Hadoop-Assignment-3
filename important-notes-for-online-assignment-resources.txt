@@ -1,2 +1,10 @@
 1) Parsing XML files in hadoop
 	https://stackoverflow.com/questions/37757266/how-to-use-streamxmlrecordreader-to-parse-single-multiline-xml-records-within
+
+2) Excellent Article on Hadoop Configuration on python
+	https://www.michael-noll.com/tutorials/writing-an-hadoop-mapreduce-program-in-python/
+        https://www.michael-noll.com/tutorials/running-hadoop-on-ubuntu-linux-single-node-cluster/
+	https://www.michael-noll.com/tutorials/running-hadoop-on-ubuntu-linux-multi-node-cluster/
+
+3) Excellent Video tutorial on Hadoop Installation
+	https://www.youtube.com/watch?v=RgXvl1MgJpc&feature=youtu.be&t=3087&ab_channel=SiftingBytes
