@@ -8,3 +8,6 @@
 
 3) Excellent Video tutorial on Hadoop Installation
 	https://www.youtube.com/watch?v=RgXvl1MgJpc&feature=youtu.be&t=3087&ab_channel=SiftingBytes
+
+4) Excellent article on Overriding InputReader class in hadoop, which is reponsible for splitting the input
+	https://data-flair.training/blogs/hadoop-inputformat/

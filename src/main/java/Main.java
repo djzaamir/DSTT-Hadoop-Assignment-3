@@ -13,6 +13,17 @@ public class Main {
 
         System.out.println("Initiating MapReduce...");
 
-        mapReduceDriver =  new MapReduceDriver(args);
+        // TODO, Some basic error checking
+        if(args.length < 2){
+            System.out.println("Please Specify Input Directory, and Output directories");
+            return;
+        }
+
+
+        if (false){
+            // Starting bootstrapping driver class, which is responsible for initiating MapReduce tasks
+            // We are also passing in the command line arguments into the driver class, because they contain Input dir and Output dir
+            mapReduceDriver =  new MapReduceDriver(args);
+        }
     }
 }
