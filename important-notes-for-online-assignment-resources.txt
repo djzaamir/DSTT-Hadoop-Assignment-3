@@ -1,5 +1,7 @@
 1) Parsing XML files in hadoop
 	https://stackoverflow.com/questions/37757266/how-to-use-streamxmlrecordreader-to-parse-single-multiline-xml-records-within
+   Better code for XML parsing
+	https://stackoverflow.com/questions/23122817/xml-parsing-through-hadoop
 
 2) Excellent Article on Hadoop Configuration on python
 	https://www.michael-noll.com/tutorials/writing-an-hadoop-mapreduce-program-in-python/
@@ -10,4 +12,4 @@
 	https://www.youtube.com/watch?v=RgXvl1MgJpc&feature=youtu.be&t=3087&ab_channel=SiftingBytes
 
 4) Excellent article on Overriding InputReader class in hadoop, which is reponsible for splitting the input
-	https://data-flair.training/blogs/hadoop-inputformat/
+	https://data-flair.training/blogs/hadoop-inputformat
