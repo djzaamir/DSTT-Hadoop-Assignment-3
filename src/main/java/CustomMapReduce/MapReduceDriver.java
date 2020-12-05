@@ -49,7 +49,7 @@ public class MapReduceDriver extends Configured implements Tool {
 
 
         //Specifying input and output paths
-            FileInputFormat.addInputPath(mapReduceJob, new Path(args[0]));
+        FileInputFormat.addInputPath(mapReduceJob, new Path(args[0]));
         FileOutputFormat.setOutputPath(mapReduceJob, new Path(args[1]));
 
 
