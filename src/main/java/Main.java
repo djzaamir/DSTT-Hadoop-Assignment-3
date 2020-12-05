@@ -3,8 +3,16 @@
 * Responsible for creating hadoop jobs, submitting them to hadoop cluster and collecting results
 * */
 
+import CustomMapReduce.*;
+
 public class Main {
-    public static void main(String[] args) {
-        System.out.println("Hey now brown cow");
+
+    private static MapReduceDriver mapReduceDriver;
+
+    public static void main(String[] args) throws Exception {
+
+        System.out.println("Initiating MapReduce...");
+
+        mapReduceDriver =  new MapReduceDriver(args);
     }
 }
