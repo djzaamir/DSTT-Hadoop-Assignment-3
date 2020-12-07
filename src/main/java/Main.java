@@ -22,6 +22,7 @@ public class Main {
 
             // Starting bootstrapping driver class, which is responsible for initiating MapReduce tasks
             // We are also passing in the command line arguments into the driver class, because they contain Input dir and Output dir
+            // The constructor method of this class will automatically begin the bootstrapping process
             mapReduceDriver =  new MapReduceDriver(args);
     }
 }
