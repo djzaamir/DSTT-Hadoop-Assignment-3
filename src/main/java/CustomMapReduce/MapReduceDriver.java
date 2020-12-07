@@ -1,5 +1,6 @@
 package CustomMapReduce;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -36,8 +37,16 @@ public class MapReduceDriver extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
 
+        //Specifying custom XML tags for splitters, responsible for breaking up massive files into smaller chunks
+        Configuration jobConf =  new Configuration();
+
+        //Specify custom XML start and end tags, which will be used by Hadoop File Splitters
+        jobConf.set("xmlinput.start", "<row ");
+        jobConf.set("xmlinput.end", " />");
+
         //Creating a custom Hadoop job
-        Job mapReduceJob = new Job();
+        Job mapReduceJob = new Job(jobConf);
+
 
         //Specifying Main Hadoop Job Runner Jar class and its name
         mapReduceJob.setJarByClass(MapReduceDriver.class);
