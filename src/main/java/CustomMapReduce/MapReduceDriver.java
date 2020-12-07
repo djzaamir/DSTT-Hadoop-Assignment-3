@@ -3,7 +3,6 @@ package CustomMapReduce;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -55,7 +54,7 @@ public class MapReduceDriver extends Configured implements Tool {
 
         //Specifying custom mapper and reducer classes for this job
         mapReduceJob.setMapperClass(CustomMap.class);
-        mapReduceJob.setReducerClass(CustomReduce.class);
+        mapReduceJob.setReducerClass(CustomReducePosts.class);
 
 
         //Specifying input and output paths
