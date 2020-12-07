@@ -53,7 +53,7 @@ public class MapReduceDriver extends Configured implements Tool {
         mapReduceJob.setJobName("Map Reduce Job to calculate different metrics on apple.stackexchange data");
 
         //Specifying custom mapper and reducer classes for this job
-        mapReduceJob.setMapperClass(CustomMap.class);
+        mapReduceJob.setMapperClass(CustomMapPosts.class);
         mapReduceJob.setReducerClass(CustomReducePosts.class);
 
 

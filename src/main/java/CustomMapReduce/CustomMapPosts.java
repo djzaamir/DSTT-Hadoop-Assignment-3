@@ -16,7 +16,7 @@ import java.io.IOException;
 /*
 * Todo Add Explanation about the working of this map class
 * */
-public class CustomMap extends Mapper<LongWritable, Text, Text, LongWritable> {
+public class CustomMapPosts extends Mapper<LongWritable, Text, Text, LongWritable> {
 
     /*
     * TODO what is LongWritable Key
