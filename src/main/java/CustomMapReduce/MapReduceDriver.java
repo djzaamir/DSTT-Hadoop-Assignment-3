@@ -4,6 +4,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -64,7 +65,7 @@ public class MapReduceDriver extends Configured implements Tool {
 
         //Specifying the types of output key, value and its format
         mapReduceJob.setOutputKeyClass(Text.class);
-        mapReduceJob.setOutputValueClass(IntWritable.class);
+        mapReduceJob.setOutputValueClass(LongWritable.class);
         mapReduceJob.setOutputFormatClass(TextOutputFormat.class);
 
 

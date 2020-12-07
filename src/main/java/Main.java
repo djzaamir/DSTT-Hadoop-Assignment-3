@@ -20,7 +20,7 @@ public class Main {
         }
 
 
-        if (false){
+        if (true){
             // Starting bootstrapping driver class, which is responsible for initiating MapReduce tasks
             // We are also passing in the command line arguments into the driver class, because they contain Input dir and Output dir
             mapReduceDriver =  new MapReduceDriver(args);
