@@ -85,8 +85,6 @@ public class CustomMap extends Mapper<LongWritable, Text, Text, LongWritable> {
 
                     //Write to hadoop's mapper output
                     context.write(hadoop_key, hadoop_value);
-                    System.out.printf("Key=%s and Value=%s" +
-                            "\n" , hadoop_key.toString(), hadoop_value.toString());
                 }
 
                 if(viewCountNode != null){
@@ -101,7 +99,6 @@ public class CustomMap extends Mapper<LongWritable, Text, Text, LongWritable> {
 
                     //Write to hadoop's mapper output
                     context.write(hadoop_key, hadoop_value);
-                    System.out.printf("Key=%s and Value=%s\n" , hadoop_key.toString(), hadoop_value.toString());
                 }
             }
 
