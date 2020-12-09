@@ -118,7 +118,7 @@ public class CustomMapPosts extends Mapper<LongWritable, Text, Text, Text> {
                 titleStr = scorePostTitle.getNodeValue();
             }
 
-            String delimeterToSegregateData = "<DELIMETER_TAG>";
+            final String delimeterToSegregateData = "<DELIMETER_TAG>";
             //These data nodes might by empty need some error checking
             //Make sure for valid scoreNode
             if (scoreNode != null) {
