@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 public class CustomReducePosts extends Reducer {
 
+    private final String delimeterToSegregateData = "<DELIMETER_TAG>";
     /*
     * Object Key      -> Is the unique key passed in to this reduce method
     *                    It will reduce the input values for this key only
@@ -21,16 +22,32 @@ public class CustomReducePosts extends Reducer {
     * */
     @Override
     protected void reduce(Object key, Iterable values, Context context) throws IOException, InterruptedException {
+
         Long highest_value = 0l;
+        String highest_value_post = "";
+        String highest_value_title = "";
 
         Iterator valuesIterable = values.iterator();
         while (valuesIterable.hasNext()){
-             long  current_value = Long.parseLong(valuesIterable.next().toString());
-             if(current_value > highest_value)
-                 highest_value = current_value;
+
+            String splittedData[] = valuesIterable.next().toString().split(delimeterToSegregateData);
+
+            long  current_numeric_value = Long.parseLong(splittedData[0]);
+
+
+             if(current_numeric_value > highest_value){
+                 highest_value       = current_numeric_value;
+
+                 if (splittedData.length > 1){
+                     highest_value_post  = splittedData[1];
+                     highest_value_title = splittedData[2];
+                 }
+             }
+
         }
 
         //write to the context for further hadoop processing
-        context.write(key, highest_value);
+        context.write(key, highest_value + delimeterToSegregateData +
+                           highest_value_title + delimeterToSegregateData + highest_value_post);
     }
 }

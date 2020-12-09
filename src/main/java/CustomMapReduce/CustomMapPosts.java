@@ -106,6 +106,19 @@ public class CustomMapPosts extends Mapper<LongWritable, Text, Text, Text> {
 
             //========================================Task-1 Specific Mapper Code ============================================
 
+            // Extracting body and title into strings, to appended with score and view-counts
+            String bodyStr   = "";
+            String titleStr = "";
+
+            //Only try to extract body and title if its not a User Post
+            if (scorePostBody != null){
+                bodyStr  = scorePostBody.getNodeValue();
+            }
+            if (scorePostTitle != null){
+                titleStr = scorePostTitle.getNodeValue();
+            }
+
+            String delimeterToSegregateData = "<DELIMETER_TAG>";
             //These data nodes might by empty need some error checking
             //Make sure for valid scoreNode
             if (scoreNode != null) {
@@ -113,7 +126,7 @@ public class CustomMapPosts extends Mapper<LongWritable, Text, Text, Text> {
 
 
                 //Creating hadoop keys and values
-                Text hadoop_value = new Text(score);
+                Text hadoop_value = new Text(score  + delimeterToSegregateData + titleStr + delimeterToSegregateData + bodyStr);
 
                 //prefix for score
                 String score_key_identifier = "score";
@@ -131,7 +144,7 @@ public class CustomMapPosts extends Mapper<LongWritable, Text, Text, Text> {
                 String viewCount = String.valueOf(viewCountNode.getNodeValue());
 
                 //Creating hadoop keys and values
-                Text hadoop_value = new Text(viewCount);
+                Text hadoop_value = new Text(viewCount + delimeterToSegregateData + titleStr + delimeterToSegregateData + bodyStr);
 
                 //prefix for viewcount
                 String viewcount_key_identifier = "view";
@@ -153,18 +166,21 @@ public class CustomMapPosts extends Mapper<LongWritable, Text, Text, Text> {
             if (UserId != null) {
                 String userId = String.valueOf(UserId.getNodeValue());
 
-                //Creating hadoop keys and values
-                Text hadoop_value = new Text(userId);
+                //Skip UserId == 1, as indicated by the assignment
+                if (Long.parseLong(userId) != 1l){
+                    //Creating hadoop keys and values
+                    Text hadoop_value = new Text(userId + delimeterToSegregateData);
 
-                //prefix for viewcount
-                String viewcount_key_identifier = "user_id";
+                    //prefix for viewcount
+                    String viewcount_key_identifier = "user_id";
 
-                //Creating key with a prefix, to segregate data in reducers
-                String final_view_key = viewcount_key_identifier + "<>" + key_year;
-                Text hadoop_key = new Text(final_view_key);
+                    //Creating key with a prefix, to segregate data in reducers
+                    String final_view_key = viewcount_key_identifier + "<>" + key_year;
+                    Text hadoop_key = new Text(final_view_key);
 
-                //Write to hadoop's mapper output
-                context.write(hadoop_key, hadoop_value);
+                    //Write to hadoop's mapper output
+                    context.write(hadoop_key, hadoop_value);
+                }
             }
 
         } catch (ParserConfigurationException | SAXException e) {
