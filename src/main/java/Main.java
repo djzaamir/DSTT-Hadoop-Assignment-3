@@ -8,7 +8,7 @@ import CustomMapReduce.*;
 public class Main {
 
     private static MapReduceDriver mapReduceDriver;
-    
+
     public static void main(String[] args) throws Exception {
 
         System.out.println("Initiating MapReduce...");

@@ -67,7 +67,7 @@ public class MapReduceDriver extends Configured implements Tool {
 
         //Specifying the types of output key, value and its format
         mapReduceJob.setOutputKeyClass(Text.class);
-        mapReduceJob.setOutputValueClass(LongWritable.class);
+        mapReduceJob.setOutputValueClass(Text.class);
         mapReduceJob.setOutputFormatClass(TextOutputFormat.class);
 
 

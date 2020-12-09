@@ -1,6 +1,5 @@
 package CustomMapReduce;
 
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;

@@ -19,7 +19,7 @@ import java.io.IOException;
  * After this it will extract different attributes of interest from each parsed XML record
  * And finally map it to a Key,Value pair as mapper's output
  * */
-public class CustomMapPosts extends Mapper<LongWritable, Text, Text, LongWritable> {
+public class CustomMapPosts extends Mapper<LongWritable, Text, Text, Text> {
 
     /*
      * LongWritable Key, is the randomly generated key assigned by hadoop
@@ -85,9 +85,18 @@ public class CustomMapPosts extends Mapper<LongWritable, Text, Text, LongWritabl
             NamedNodeMap attributesOfCurrentXMLRecord = currentXMLRecord.getAttributes();
 
             //Extracting nodes from a single xml record
-            Node scoreNode = attributesOfCurrentXMLRecord.getNamedItem("Score");
+
+            //Common attributes for both `Score` and `Viewcount`
             Node dateNode = attributesOfCurrentXMLRecord.getNamedItem("CreationDate"); //has to be present in every post
+            Node scorePostBody  = attributesOfCurrentXMLRecord.getNamedItem("Body");
+            Node scorePostTitle = attributesOfCurrentXMLRecord.getNamedItem("Title");
+
+            Node scoreNode = attributesOfCurrentXMLRecord.getNamedItem("Score");
+
             Node viewCountNode = attributesOfCurrentXMLRecord.getNamedItem("ViewCount");
+
+
+            Node UserId = attributesOfCurrentXMLRecord.getNamedItem("UserId");
 
 
             // Parsing date because, it is the common requirement for both `score` and `viewcount`, since this date will be used
@@ -95,15 +104,16 @@ public class CustomMapPosts extends Mapper<LongWritable, Text, Text, LongWritabl
             String key_year = dateNode.getNodeValue().split("-")[0];
 
 
-            //These data nodes might by empty need some error checking
+            //========================================Task-1 Specific Mapper Code ============================================
 
+            //These data nodes might by empty need some error checking
             //Make sure for valid scoreNode
             if (scoreNode != null) {
-                Long score = Long.parseLong(scoreNode.getNodeValue());
+                String score = String.valueOf(scoreNode.getNodeValue());
 
 
                 //Creating hadoop keys and values
-                LongWritable hadoop_value = new LongWritable(score);
+                Text hadoop_value = new Text(score);
 
                 //prefix for score
                 String score_key_identifier = "score";
@@ -116,14 +126,38 @@ public class CustomMapPosts extends Mapper<LongWritable, Text, Text, LongWritabl
                 context.write(hadoop_key, hadoop_value);
             }
 
+            //Making sure for valid data of viewCount
             if (viewCountNode != null) {
-                Long viewCount = Long.parseLong(viewCountNode.getNodeValue());
+                String viewCount = String.valueOf(viewCountNode.getNodeValue());
 
                 //Creating hadoop keys and values
-                LongWritable hadoop_value = new LongWritable(viewCount);
+                Text hadoop_value = new Text(viewCount);
 
                 //prefix for viewcount
                 String viewcount_key_identifier = "view";
+
+                //Creating key with a prefix, to segregate data in reducers
+                String final_view_key = viewcount_key_identifier + "<>" + key_year;
+                Text hadoop_key = new Text(final_view_key);
+
+                //Write to hadoop's mapper output
+                context.write(hadoop_key, hadoop_value);
+            }
+
+
+
+          //========================================Task-2 Specific Mapper Code ============================================
+
+
+            //Making sure for valid data for UserId
+            if (UserId != null) {
+                String userId = String.valueOf(UserId.getNodeValue());
+
+                //Creating hadoop keys and values
+                Text hadoop_value = new Text(userId);
+
+                //prefix for viewcount
+                String viewcount_key_identifier = "user_id";
 
                 //Creating key with a prefix, to segregate data in reducers
                 String final_view_key = viewcount_key_identifier + "<>" + key_year;
@@ -137,4 +171,5 @@ public class CustomMapPosts extends Mapper<LongWritable, Text, Text, LongWritabl
             e.printStackTrace();
         }
     }
+
 }
