@@ -41,8 +41,8 @@ public class MapReduceDriver extends Configured implements Tool {
         Configuration jobConf =  new Configuration();
 
         //Specify custom XML start and end tags, which will be used by Hadoop File Splitters
-        jobConf.set("xmlinput.start", "<row ");
-        jobConf.set("xmlinput.end", " />");
+        jobConf.set("xmlinput.start", "<row");
+        jobConf.set("xmlinput.end", "/>");
 
         //Creating a custom Hadoop job
         Job mapReduceJob = new Job(jobConf);
@@ -56,6 +56,9 @@ public class MapReduceDriver extends Configured implements Tool {
         mapReduceJob.setMapperClass(CustomMapPosts.class);
         mapReduceJob.setReducerClass(CustomReducePosts.class);
 
+        //Setting input and output formats
+        mapReduceJob.setInputFormatClass(CustomXMLInputFormat.class);
+        mapReduceJob.setOutputFormatClass(TextOutputFormat.class);
 
         //Specifying input and output paths
         FileInputFormat.addInputPath(mapReduceJob, new Path(args[0]));

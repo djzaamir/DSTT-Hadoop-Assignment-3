@@ -14,92 +14,123 @@ import java.io.IOException;
 
 
 /*
-* Todo Add Explanation about the working of this map class
-* */
+ * This class is responsible for parsing chunks of data assigned by hadoop.
+ * Since input data is coming in XML, this class will first parse XML data.
+ * After this it will extract different attributes of interest from each parsed XML record
+ * And finally map it to a Key,Value pair as mapper's output
+ * */
 public class CustomMapPosts extends Mapper<LongWritable, Text, Text, LongWritable> {
 
     /*
-    * TODO what is LongWritable Key
-    *
-    * Text Value, is the input chunk assigned to this mapper
-    * Context context, is the object which we are using to communicate with caller of this mapper, in order communicate
-    *                   results back to the caller.
-    * */
+     * LongWritable Key, is the randomly generated key assigned by hadoop
+     *
+     * Text Value, is the input chunk assigned to this mapper
+     * Context context, is the object which we are using to communicate with caller of this mapper, in order communicate
+     *                   results back to the caller.
+     * */
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
-        //Parsing XML `value`, because the the splitters might have assigned big chunks of XML strings to individual mappers
 
         try {
+
+            //Responsible for parsing XML
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
+            //In order to form a valid XML string with proper XML headers before sending it for parsing
             StringBuilder xmlStringBuilder = new StringBuilder();
 
             //Adding XML header tag
             xmlStringBuilder.append("<?xml version=\"1.0\"?>");
 
             //Creating XML string structure for the parser to parse
-            xmlStringBuilder.append("<ROOT-TAG>");
             xmlStringBuilder.append(value.toString());
-            xmlStringBuilder.append("</ROOT-TAG>");
 
-            ByteArrayInputStream xmlInput =  new ByteArrayInputStream(xmlStringBuilder.toString().getBytes("UTF-8"));
+            //Responsible for converting XML data into a byte array
+            ByteArrayInputStream xmlInput = new ByteArrayInputStream(xmlStringBuilder.toString().getBytes("UTF-8"));
 
             //Initiate parse
-            Document parsedDocument =  documentBuilder.parse(xmlInput);
-
-            Element rootNode =  parsedDocument.getDocumentElement();
-
-            NodeList InnerXMLRecordsList = rootNode.getElementsByTagName("row");
-
-            for (int i = 0 ; i < InnerXMLRecordsList.getLength(); i++){
-                Node currentXMLRecord =  InnerXMLRecordsList.item(i);
-
-                /*
-                 * CORE MAPPER CODE, RESPONSIBLE FOR GENERATING INPUT FOR REDUCERS
-                 * TODO Please explain the working of this mapper function
-                 * */
-                NamedNodeMap attributesOfCurrentXMLRecord = currentXMLRecord.getAttributes();
-
-                Node scoreNode     = attributesOfCurrentXMLRecord.getNamedItem("Score");
-                Node dateNode      = attributesOfCurrentXMLRecord.getNamedItem("CreationDate"); //has to be present in every post
-                Node viewCountNode = attributesOfCurrentXMLRecord.getNamedItem("ViewCount");
+            Document parsedDocument = documentBuilder.parse(xmlInput);
 
 
-                // Parsing date because, it is the common requirement for both score and viewcount, since this date will be used
-                // as the key for both nodes will be date, with minor modifications
-                String key_year =  dateNode.getNodeValue().split("-")[0];
+            //Extract node
+            Node currentXMLRecord = parsedDocument.getDocumentElement();
+
+            /*
+             * CORE MAPPER CODE, RESPONSIBLE FOR GENERATING INPUT FOR REDUCERS
+
+               From the parsed XML document, we are extracting different nodes of interest
+
+               These nodes are  (Required by the assignment)
+                1) Score
+                2) CreationDate
+                3) ViewCount
+
+               Finally we are mapping Score and Viewcount as value and setting CreationDate year as the key
+
+               To keep these two entities `Score` and `Viewcount` Separate` in the reducers
+               We are prepending `Score` and `Viewcount` with different prefixes
+
+               The purpose of doing this is to make sure that our reducers will receive different globally unique (In total record)
+               but locally  (For individual reducer) same input datasets
+
+               for example some reducers will receive data prepended with score, indicating it to crunch for scores
+               others will receive data prepended with view, indicating it to crunch for `view`
+
+               This will also result in separation of two types of data `score` and `view` in our final output
+
+             * */
+
+            //Extracting attributes map for this XML record
+            NamedNodeMap attributesOfCurrentXMLRecord = currentXMLRecord.getAttributes();
+
+            //Extracting nodes from a single xml record
+            Node scoreNode = attributesOfCurrentXMLRecord.getNamedItem("Score");
+            Node dateNode = attributesOfCurrentXMLRecord.getNamedItem("CreationDate"); //has to be present in every post
+            Node viewCountNode = attributesOfCurrentXMLRecord.getNamedItem("ViewCount");
 
 
-                //These data nodes might by empty need some error checking
-                if (scoreNode != null){
-                    Long score =  Long.parseLong(scoreNode.getNodeValue());
+            // Parsing date because, it is the common requirement for both `score` and `viewcount`, since this date will be used
+            // as the key for both nodes will be date, with minor modifications
+            String key_year = dateNode.getNodeValue().split("-")[0];
 
 
-                    //Creating hadoop keys and values
-                    LongWritable hadoop_value = new LongWritable(score);
+            //These data nodes might by empty need some error checking
 
-                    String score_key_identifier = "score";
-                    String final_score_key      = score_key_identifier  + "<>" +  key_year;
-                    Text hadoop_key = new Text(final_score_key);
+            //Make sure for valid scoreNode
+            if (scoreNode != null) {
+                Long score = Long.parseLong(scoreNode.getNodeValue());
 
-                    //Write to hadoop's mapper output
-                    context.write(hadoop_key, hadoop_value);
-                }
 
-                if(viewCountNode != null){
-                    Long viewCount = Long.parseLong(viewCountNode.getNodeValue());
+                //Creating hadoop keys and values
+                LongWritable hadoop_value = new LongWritable(score);
 
-                    //Creating hadoop keys and values
-                    LongWritable hadoop_value = new LongWritable(viewCount);
+                //prefix for score
+                String score_key_identifier = "score";
 
-                    String viewcount_key_identifier = "view";
-                    String final_view_key          = viewcount_key_identifier + "<>" +  key_year;
-                    Text hadoop_key = new Text(final_view_key);
+                //Creating key with a prefix, to segregate data in reducers
+                String final_score_key = score_key_identifier + "<>" + key_year;
+                Text hadoop_key = new Text(final_score_key);
 
-                    //Write to hadoop's mapper output
-                    context.write(hadoop_key, hadoop_value);
-                }
+                //Write to hadoop's mapper output
+                context.write(hadoop_key, hadoop_value);
+            }
+
+            if (viewCountNode != null) {
+                Long viewCount = Long.parseLong(viewCountNode.getNodeValue());
+
+                //Creating hadoop keys and values
+                LongWritable hadoop_value = new LongWritable(viewCount);
+
+                //prefix for viewcount
+                String viewcount_key_identifier = "view";
+
+                //Creating key with a prefix, to segregate data in reducers
+                String final_view_key = viewcount_key_identifier + "<>" + key_year;
+                Text hadoop_key = new Text(final_view_key);
+
+                //Write to hadoop's mapper output
+                context.write(hadoop_key, hadoop_value);
             }
 
         } catch (ParserConfigurationException | SAXException e) {
